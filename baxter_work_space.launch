@@ -1,0 +1,18 @@
+<launch>
+  <!-- Left and right electric gripper params. Set to true to check for collisions for their links -->
+  <arg name="right_electric_gripper" default="false"/>
+  <arg name="left_electric_gripper" default="false"/>
+  <!-- Set the kinematic tips for the left_arm and right_arm move_groups -->
+  <arg name="left_tip_name" default="left_gripper"/>
+  <arg name="right_tip_name" default="right_gripper"/>
+
+  <!-- The semantic description that corresponds to the URDF -->
+  <param name="robot_description_semantic"
+      command="$(find xacro)/xacro.py --inorder $(find baxter_moveit_config)/config/baxter.srdf.xacro
+          left_electric_gripper:=$(arg left_electric_gripper)
+          right_electric_gripper:=$(arg right_electric_gripper)
+          left_tip_name:=$(arg left_tip_name)
+          right_tip_name:=$(arg right_tip_name)"/>
+
+  <node name="baxter_workspace_analysis" pkg="baxter_work_space" type="baxter_work_space" output="screen"/>
+</launch>
