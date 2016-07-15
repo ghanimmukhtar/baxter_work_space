@@ -9,8 +9,6 @@
 #include <boost/timer.hpp>
 #include <moveit/kinematic_constraints/utils.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
-#include <baxter_core_msgs/JointCommand.h>
-
 std::vector<double> q(7);
 //files to store all deduced end effector poses
 std::ofstream ee_poses;
@@ -41,17 +39,12 @@ int main(int argc, char **argv)
 {
     ros::init(argc, argv, "baxter_work_space");
     ros::NodeHandle node;
-    ros::Publisher pub_msg;
     //open the file
     ee_poses.open("baxter_workspace.csv");
     Eigen::VectorXd current_position(3);
     Eigen::Vector3d current_angles;
     bool continue_status = true;
     double angle_step = 0.05;
-    pub_msg = node.advertise<baxter_core_msgs::JointCommand>("/robot/limb/left/joint_command",1);
-    ros::AsyncSpinner my_spinner(4);
-    my_spinner.start();
-    usleep(1e6);
     //defining joints limits, mean values, ranges and other variables to avoid joint limits later
     Eigen::VectorXd qmin(7),qmax(7);
     qmin << -1.7016,-2.147,-3.0541,-0.05,-3.059,-1.5707,-3.059;
@@ -93,14 +86,6 @@ int main(int argc, char **argv)
                                     ee_pose << current_position(0), current_position(1), current_position(2), current_angles(0),  current_angles(1), current_angles(2);
                                     ee_poses << ee_pose(0) << "," << ee_pose(1) << "," << ee_pose(2) << "," << ee_pose(3) << "," << ee_pose(4) << "," << ee_pose(5) << "\n";
                                     std::cout << "end effector pose is: " << std::endl << ee_pose << std::endl;
-                                    /*baxter_core_msgs::JointCommand command_msg;
-                                    command_msg.mode = command_msg.POSITION_MODE;
-                                    command_msg.names.push_back("left_s0"); command_msg.names.push_back("left_s1"); command_msg.names.push_back("left_e0");
-                                    command_msg.names.push_back("left_e1"); command_msg.names.push_back("left_w0"); command_msg.names.push_back("left_w1");
-                                    command_msg.names.push_back("left_w2");
-                                    for(int i = 0; i < q.size(); i++)
-                                        command_msg.command.push_back(q[i]);
-                                    pub_msg.publish(command_msg);*/
                                     std::cout << "press enter to try next joints configuration ..... " << std::endl;
                                     //std::cin.ignore();
                                     //update joint left_w2 with the angle step (0.05 radian)
