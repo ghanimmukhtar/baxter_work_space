@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     Eigen::VectorXd current_position(3);
     Eigen::Vector3d current_angles;
     bool continue_status = true;
-    double angle_step = 0.05;
+    double giant_angle_step = 0.5, fine_angle_step = 0.2;
     //defining joints limits, mean values, ranges and other variables to avoid joint limits later
     Eigen::VectorXd qmin(7),qmax(7);
     qmin << -1.7016,-2.147,-3.0541,-0.05,-3.059,-1.5707,-3.059;
@@ -85,39 +85,40 @@ int main(int argc, char **argv)
                                     current_angles = angles_stracter(transform_l_ee_w);
                                     ee_pose << current_position(0), current_position(1), current_position(2), current_angles(0),  current_angles(1), current_angles(2);
                                     ee_poses << ee_pose(0) << "," << ee_pose(1) << "," << ee_pose(2) << "," << ee_pose(3) << "," << ee_pose(4) << "," << ee_pose(5) << "\n";
-                                    std::cout << "end effector pose is: " << std::endl << ee_pose << std::endl;
-                                    std::cout << "press enter to try next joints configuration ..... " << std::endl;
+                                    //std::cout << "end effector pose is: " << std::endl << ee_pose << std::endl;
+                                    //std::cout << "press enter to try next joints configuration ..... " << std::endl;
                                     //std::cin.ignore();
                                     //update joint left_w2 with the angle step (0.05 radian)
-                                    q[6] = q[6] + angle_step;
+                                    q[6] = q[6] + fine_angle_step;
                                 }
                                 //update joint left_w1 with the angle step (0.05 radian)
-                                q[5] = q[5] + angle_step;
+                                q[5] = q[5] + fine_angle_step;
                                 //for the new left_w1 make sure to move subsequent joints (i.e. left_w2) from minimum to max angle to scan all possibilities
                                 q[6] = qmin(6);
                             }
                             //update joint left_w0 with the angle step (0.05 radian)
-                            q[4] = q[4] + angle_step;
+                            q[4] = q[4] + fine_angle_step;
                             //for the new left_w0 make sure to move subsequent joints (i.e. left_w2 and left_w1) from minimum to max angle to scan all possibilities
                             q[6] = qmin(6); q[5] = qmin(5);
                         }
                         //update joint left_e1 with the angle step (0.05 radian)
-                        q[3] = q[3] + angle_step;
+                        q[3] = q[3] + fine_angle_step;
                         //for the new left_e1 make sure to move subsequent joints (i.e. left_w2, left_w1, and left_w0) from minimum to max angle to scan all possibilities
                         q[6] = qmin(6); q[5] = qmin(5); q[4] = qmin(4);
                     }
                     //update joint left_e0 with the angle step (0.05 radian)
-                    q[2] = q[2] + angle_step;
+                    q[2] = q[2] + fine_angle_step;
                     //for the new left_e0 make sure to move subsequent joints (i.e. left_w2, left_w1, left_w0 and left_e1) from minimum to max angle to scan all possibilities
                     q[6] = qmin(6); q[5] = qmin(5); q[4] = qmin(4); q[3] = qmin(3);
                 }
                 //update joint left_s1 with the angle step (0.05 radian)
-                q[1] = q[1] + angle_step;
+                q[1] = q[1] + giant_angle_step;
                 //for the new left_s1 make sure to move subsequent joints (i.e. left_w2, left_w1, left_w0, left_e1, and left_e0) from minimum to max angle to scan all possibilities
                 q[6] = qmin(6); q[5] = qmin(5); q[4] = qmin(4); q[3] = qmin(3); q[2] = qmin(2);
             }
             //update joint left_s0 with the angle step (0.05 radian)
-            q[0] = q[0] + angle_step;
+            q[0] = q[0] + giant_angle_step;
+            std::cout << "joint left_s0 is now: " << q[0] << std::endl;
             //for the new left_s0 make sure to move subsequent joints (i.e. left_w2, left_w1, left_w0, left_e1, left_e0 and left_s1) from minimum to max angle to scan all possibilities
             q[6] = qmin(6); q[5] = qmin(5); q[4] = qmin(4); q[3] = qmin(3); q[2] = qmin(2); q[1] = qmin(1);
         }
